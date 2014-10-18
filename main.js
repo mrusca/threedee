@@ -4,29 +4,39 @@
     var cameras = new CameraSet().init();
 
     function shoot() {
-        cameras.getStreams().then(function(cameras) {
-            _.forEach(cameras, function(camera) {
-                console.log('CAMURA', camera);
-                var config = {
-                    cameraStream: camera.localMediaStream,
-                    keepCameraOn: true,
-                    gifWidth: camera.width,
-                    gifHeight: camera.height
-                };
-                gifshot.takeSnapShot(config, function(obj) {
-                    if( ! obj.error) {
-                        var image = obj.image,
-                        animatedImage = document.createElement('img');
-                        animatedImage.src = image;
-                        document.body.appendChild(animatedImage);
-                    }
+        var images = [];
+        var deferred = new $.Deferred();
+        var promise = deferred.promise();
+        
+        _.forEach(cameras.cameras, function(camera) {
+            promise = promise.then(function() {
+                return camera.takeSnap().then(function(obj, camera) {
+                    console.log('EEEEE');
+                    images.push(obj.image);
+                    addImage(obj.image);
                 });
             });
         });
+
+        promise.then(function() {
+            gifshot.createGIF({
+                'images': images
+            }, function(obj) {
+                addImage(obj.image);
+            });
+        });
+
+        deferred.resolve(true);
     }
 
     function setup() {
         cameras.discover();
+    }
+
+    function addImage(image) {
+        var el = document.createElement('img');
+        el.src = image;
+        document.body.appendChild(el);
     }
 
     $(document).ready(setup);

@@ -49,5 +49,25 @@
 		this.deferred.reject(e);
 	};
 
+	Camera.prototype.takeSnap = function() {
+		var deferred = new $.Deferred();
+		this.getStream().then(function(camera) {
+			console.log('Taking snap');
+			var config = {
+	            cameraStream: camera.localMediaStream,
+	            keepCameraOn: false,
+	            gifWidth: camera.width,
+	            gifHeight: camera.height
+	        };
+			gifshot.takeSnapShot(config, function(obj) {
+	            camera.localMediaStream.stop();
+	            camera.localMediaStream = null;
+	            console.log('Got snap');
+	            deferred.resolve(obj, camera);
+	        });
+	    });
+	    return deferred.promise();
+	};
+
 	global.Camera = Camera;
 })(window);

@@ -39,7 +39,6 @@
 			return $.when(_.toArray(arguments));
 		});
 	};
-
 	
 
 	global.CameraSet = CameraSet;

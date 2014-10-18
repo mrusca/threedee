@@ -1,0 +1,22 @@
+{
+  "name": "threedee",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrusca/threedee.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrusca/threedee/issues"
+  },
+  "homepage": "https://github.com/mrusca/threedee",
+  "dependencies": {
+    "express": "^4.9.8"
+  }
+}
