@@ -2,7 +2,7 @@
 	var Camera = function(){};
 
 	Camera.prototype.init = function(data) {
-		this.width = 1280;
+		this.width = 960;
 		this.height = 720;
 		if (data) {
 			_.merge(this, data);
@@ -41,7 +41,9 @@
 	Camera.prototype.receivedStream = function(localMediaStream) {
 		console.log('Received stream', localMediaStream);
 		this.localMediaStream = localMediaStream;
-		this.deferred.resolve(this);
+		setTimeout(function() {
+			this.deferred.resolve(this);
+		}.bind(this), 1000);
 	};
 
 	Camera.prototype.streamError = function(e) {
@@ -57,7 +59,7 @@
 	            cameraStream: camera.localMediaStream,
 	            keepCameraOn: false,
 	            gifWidth: camera.width,
-	            gifHeight: camera.height
+	            gifHeight: camera.height,
 	        };
 			gifshot.takeSnapShot(config, function(obj) {
 	            camera.localMediaStream.stop();

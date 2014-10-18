@@ -1,0 +1,11 @@
+button {
+	display: block;
+}
+
+img {
+	display: block;
+}
+
+canvas {
+	display: none;
+}
