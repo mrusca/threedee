@@ -1,0 +1,13 @@
+{
+  "name": "threedee",
+  "version": "1.0.0",
+  "ignore": [
+  ],
+  "dependencies": {
+      "jquery":"latest",
+      "lodash":"latest",
+      "gifshot":"latest"
+  },
+  "devDependencies": {
+  }
+}
