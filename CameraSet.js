@@ -16,7 +16,7 @@
 	};
 
 	CameraSet.prototype.discover = function() {
-
+		var deferred = new $.Deferred();
         MediaStreamTrack.getSources(function(sourceInfos) {
             var audioSource = null;
             var videoSource = null;
@@ -28,7 +28,9 @@
                     this.cameras.push(new Camera().init(sourceInfo));
                 }
             }
+            deferred.resolve(this.cameras);
         }.bind(this));
+        return deferred.promise();
 	};
 
 	CameraSet.prototype.getStreams = function() {
@@ -39,7 +41,119 @@
 			return $.when(_.toArray(arguments));
 		});
 	};
-	
+
+	CameraSet.prototype.getUserMedia = function() {
+		var func = navigator.getUserMedia ||
+                    navigator.webkitGetUserMedia ||
+                    navigator.mozGetUserMedia ||
+                    navigator.msGetUserMedia;
+
+        var args = _.toArray(arguments);
+
+        // Chrome whinges if getUserMedia is not invoked on the navigator object
+        return func.apply(navigator, args);
+	};
+
+	CameraSet.prototype.setupSlowVideo = function() {
+		this.slowVideo = {
+			canvas1: document.getElementById('canvas1'),
+		    canvas2: document.getElementById('canvas2'),
+		    context1: canvas1.getContext('2d'),
+		    context2: canvas2.getContext('2d'),
+		    cw: canvas1.clientWidth,
+		    ch: canvas1.clientHeight,
+		    video: document.createElement("video"),
+		    currentSource: 0,
+		    videoSources: this.cameras,
+		    lastStream: null
+		};
+		
+
+	    this.slowVideo.context2.translate(this.slowVideo.cw, this.slowVideo.ch);
+	    this.slowVideo.context2.rotate(Math.PI);
+
+	    this.slowVideo.video.autoplay="autoplay";
+	    var self = this;
+
+	    this.slowVideo.video.addEventListener('playing', function() {
+	    	var context = (self.slowVideo.currentSource === 0 ? self.slowVideo.context1 : self.slowVideo.context2);
+	        self.drawSlowVideoFrame(this, context, self.slowVideo.currentSource, self.slowVideo.cw, self.slowVideo.ch);
+	    }, false);
+
+	    this.slowVideoNext();
+	    
+	};
+
+    CameraSet.prototype.drawSlowVideoFrame = function(v, c, l, w, h) {
+        if (v.paused || v.ended) {
+        	return false;
+        }
+        c.drawImage(v, 0, 0, w, h);
+
+        if (this.recordFrames > 0) {
+        	var canvas = l === 0 ? this.slowVideo.canvas1 : this.slowVideo.canvas2;
+        	this.recordFrames--;
+        	this.recordBuffer.push(canvas.toDataURL());
+        	if (this.recordFrames === 0) {
+	        	this.recordDeferred.resolve(this.recordBuffer);
+	        }
+        }
+
+
+        if (l === 0) {
+            this.slowVideo.canvas1.className = 'on';
+            this.slowVideo.canvas2.className = 'off';
+        } else {
+            this.slowVideo.canvas1.className = 'off';
+            this.slowVideo.canvas2.className = 'on';
+        }
+        this.slowVideoNext();
+    };
+
+    CameraSet.prototype.captureSlowVideoFrame = function() {
+        var mediaOptions = {
+            video: {
+                mandatory: {
+                    minWidth: 960,
+                    minHeight: 720
+                },
+                optional: [
+                    {sourceId: this.slowVideo.videoSources[this.slowVideo.currentSource].id}
+                ]
+            }
+        };
+        this.getUserMedia(mediaOptions, this.slowVideoSuccess.bind(this), this.slowVideoError.bind());
+    };
+
+	CameraSet.prototype.slowVideoError = function(error){
+	    console.log("navigator.getUserMedia error: ", error);
+	};
+
+	CameraSet.prototype.slowVideoSuccess = function(stream) {
+        this.slowVideo.video.src = window.URL.createObjectURL(stream);
+        this.slowVideo.video.play();
+        this.slowVideo.lastStream = stream;
+    };
+
+    CameraSet.prototype.slowVideoNext = function() {
+        if (this.slowVideo.lastStream) {
+            this.slowVideo.lastStream.stop();
+        }
+        this.slowVideo.video.src = "";
+        if (this.slowVideo.currentSource < this.slowVideo.videoSources.length - 1) {
+            this.slowVideo.currentSource += 1;
+        } else {
+            this.slowVideo.currentSource = 0;
+        }
+        this.captureSlowVideoFrame();
+    };
+
+    CameraSet.prototype.record = function(frameCount) {
+    	this.recordFrames = frameCount;
+    	this.recordBuffer = [];
+    	this.recordDeferred = new $.Deferred();
+    	return this.recordDeferred.promise();
+    };
 
 	global.CameraSet = CameraSet;
 })(window);
