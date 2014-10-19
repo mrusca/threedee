@@ -69,8 +69,8 @@
 		};
 		
 
-	    this.slowVideo.context2.translate(this.slowVideo.cw, this.slowVideo.ch);
-	    this.slowVideo.context2.rotate(Math.PI);
+	    //this.slowVideo.context2.translate(this.slowVideo.cw, this.slowVideo.ch);
+	    //this.slowVideo.context2.rotate(Math.PI);
 
 	    this.slowVideo.video.autoplay="autoplay";
 	    var self = this;
@@ -94,6 +94,7 @@
         	var canvas = l === 0 ? this.slowVideo.canvas1 : this.slowVideo.canvas2;
         	this.recordFrames--;
         	this.recordBuffer.push(canvas.toDataURL());
+        	Canvas2Image.saveAsJPEG(canvas);
         	if (this.recordFrames === 0) {
 	        	this.recordDeferred.resolve(this.recordBuffer);
 	        }
@@ -101,11 +102,11 @@
 
 
         if (l === 0) {
-            this.slowVideo.canvas1.className = 'on';
+            this.slowVideo.canvas1.className = '';
             this.slowVideo.canvas2.className = 'off';
         } else {
             this.slowVideo.canvas1.className = 'off';
-            this.slowVideo.canvas2.className = 'on';
+            this.slowVideo.canvas2.className = '';
         }
         this.slowVideoNext();
     };

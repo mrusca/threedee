@@ -10,13 +10,25 @@
         <link rel="stylesheet" href="main.css">
     </head>
     <body>
-        <button>SHOOT</button>
-        <canvas id="canvas1" height="720" width="960"></canvas>
-        <canvas id="canvas2" height="720" width="960"></canvas>
+        <div id="container">
+            <p id="instructions">
+                Get central and touch the pads
+            </p>
+            <div id="input" class="on">
+                <canvas id="canvas1" height="720" width="960"></canvas>
+                <canvas id="canvas2" height="720" width="960"></canvas>
+            </div>
+
+            <img id="output" class="off" />
+        </div>
+
+        <h2 id="message" class="off">DON'T MOVE</h2>
 
         <script src="vendor/jquery/dist/jquery.min.js"></script>
         <script src="vendor/lodash/dist/lodash.min.js"></script>
         <script src="vendor/gifshot/build/gifshot.min.js"></script>
+
+        <script src="Canvas2Image.js"></script>
 
         <script src="Camera.js"></script>
         <script src="CameraSet.js"></script>
