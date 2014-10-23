@@ -62,7 +62,7 @@
 		    context2: canvas2.getContext('2d'),
 		    cw: canvas1.clientWidth,
 		    ch: canvas1.clientHeight,
-		    video: document.createElement("video"),
+		    video: document.getElementById('video'),
 		    currentSource: 0,
 		    videoSources: this.cameras,
 		    lastStream: null
@@ -100,15 +100,16 @@
 	        }
         }
 
-
-        if (l === 0) {
-            this.slowVideo.canvas1.className = '';
-            this.slowVideo.canvas2.className = 'off';
-        } else {
-            this.slowVideo.canvas1.className = 'off';
-            this.slowVideo.canvas2.className = '';
-        }
-        this.slowVideoNext();
+        if (this.slowVideo.videoSources.length > 1) {
+	        if (l === 0) {
+	            this.slowVideo.canvas1.className = '';
+	            this.slowVideo.canvas2.className = 'off';
+	        } else {
+	            this.slowVideo.canvas1.className = 'off';
+	            this.slowVideo.canvas2.className = '';
+	        }
+	    }
+    	this.slowVideoNext();
     };
 
     CameraSet.prototype.captureSlowVideoFrame = function() {
@@ -137,6 +138,10 @@
     };
 
     CameraSet.prototype.slowVideoNext = function() {
+    	if (this.slowVideo.videoSources.length === 1 && this.slowVideo.lastStream) {
+    		this.captureSlowVideoFrame();
+    		return;
+    	}
         if (this.slowVideo.lastStream) {
             this.slowVideo.lastStream.stop();
         }

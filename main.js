@@ -1,12 +1,17 @@
-(function() {
-'use strict';
+(function(global) {
+    'use strict';
 
+    var shooting = false;
     var cameraSet = new CameraSet().init();
     var $output;
     var $input;
     var $message;
     
     function shoot() {
+        if (shooting) {
+            return;
+        }
+        shooting = true;
         $message.removeClass('off');
         cameraSet.record(2).then(function(images) {
             gifshot.createGIF({
@@ -16,6 +21,7 @@
             }, function(obj) {
                 displayImage(obj.image);
                 saveImage(obj.image);
+                global.Alice.sayQuote();
             });
 
         });
@@ -34,6 +40,7 @@
             $input.addClass('on');
             $output.removeClass('on');
             $output.addClass('off');
+            shooting = false;
         }, 5000);
     }
 
@@ -49,7 +56,7 @@
         cameraSet.discover().then(cameraSet.setupSlowVideo.bind(cameraSet));
 
         window.addEventListener('keydown', function(e) {
-            if (e.keyCode == 32) {
+            if (e.keyCode == 32 && ! shooting) {
                 shoot();
             } else if (e.keyCode == 38) {
                 
@@ -63,4 +70,4 @@
     var $button = $('button');
     $button.on('click', shoot);
 
-})();
+})(window);
