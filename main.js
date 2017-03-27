@@ -6,7 +6,7 @@
     var $output;
     var $input;
     var $message;
-    
+
     function shoot() {
         if (shooting) {
             return;
@@ -59,9 +59,9 @@
             if (e.keyCode == 32 && ! shooting) {
                 shoot();
             } else if (e.keyCode == 38) {
-                
+
             }
-            
+
         }, false);
     }
 

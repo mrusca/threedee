@@ -1,38 +1,38 @@
 (function(global, speech) {
-	'use strict';
+    'use strict';
 
-	var Alice = function(){};
+    var Alice = function() {};
 
-	Alice.prototype.init = function() {
-		this.bestName = "Google UK English Female";
-		this.voice = null;
-		speech.onvoiceschanged = this.onVoicesChanged.bind(this);
-		return this;
-	};
+    Alice.prototype.init = function() {
+        this.bestName = "Google UK English Female";
+        this.voice = null;
+        speech.onvoiceschanged = this.onVoicesChanged.bind(this);
+        return this;
+    };
 
-	Alice.prototype.onVoicesChanged = function() {
-        
-    	speech.getVoices().forEach(function(voice, index) {
-	    	//console.log(index, voice.name, voice.default ? '(default)' :'', voice);
-	    	if (this.bestName === voice.name) {
-	    		this.voice = voice;
-	    		return false;
-	    	}
-	    }.bind(this));
-	};
+    Alice.prototype.onVoicesChanged = function() {
 
-	Alice.prototype.say = function(text) {
-		var utter = new SpeechSynthesisUtterance();
-		utter.voice = this.voice;
-		utter.text = text;
-		speech.speak(utter);
-	};
+        speech.getVoices().forEach(function(voice, index) {
+            //console.log(index, voice.name, voice.default ? '(default)' :'', voice);
+            if (this.bestName === voice.name) {
+                this.voice = voice;
+                return false;
+            }
+        }.bind(this));
+    };
 
-	Alice.prototype.sayQuote = function() {
-		var i = _.random(0, global.quotes.length);
-		this.say(global.quotes[i]);
-	};
+    Alice.prototype.say = function(text) {
+        var utter = new SpeechSynthesisUtterance();
+        utter.voice = this.voice;
+        utter.text = text;
+        speech.speak(utter);
+    };
 
-	// Singleton
-	global.Alice = new Alice().init();
+    Alice.prototype.sayQuote = function() {
+        var i = _.random(0, global.quotes.length);
+        this.say(global.quotes[i]);
+    };
+
+    // Singleton
+    global.Alice = new Alice().init();
 })(window, speechSynthesis);
